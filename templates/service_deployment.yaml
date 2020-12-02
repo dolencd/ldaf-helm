@@ -1,0 +1,36 @@
+{{- range .Values.services}}
+{{- $service_name := printf "%s-ldafservice-%s" $.Release.Name .name }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $service_name }}
+  labels:
+    {{- include "ldaf.labels" $ | nindent 4 }}
+spec:
+  replicas: {{ default 1 .replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "ldaf.selectorLabels" $ | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "ldaf.selectorLabels" $ | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ $service_name }}
+          image: dolencd/ldafv2service:latest
+          env:
+            - name: REDIS_HOST
+              value: "{{ $.Release.Name }}-redis-master"
+            - name: RABBITMQ_ADDRESS
+              value: "amqp://{{ $.Release.Name }}-rabbitmq"
+              {{- if .gitsrc }}
+            - name: SRC_GIT
+              value: {{ .gitsrc }}
+              {{- else if .httpsrc }}
+            - name: SRC_HTTP
+              value: {{ .httpsrc }}
+              {{- else}}
+              {{- fail "Either gitsrc or httpsrc is required for each service"}}
+              {{- end}}
+{{- end }} 

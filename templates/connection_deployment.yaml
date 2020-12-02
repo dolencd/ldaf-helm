@@ -1,0 +1,35 @@
+{{- range .Values.connections}}
+{{- $connection_name := printf "%s-ldafconn-%s" $.Release.Name .name }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $connection_name  }}
+  labels:
+    ldafv2-connection-name: {{ .name | quote }}
+    {{- include "ldaf.labels" $ | nindent 4 }}
+spec:
+  replicas: {{ default 1 .replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "ldaf.selectorLabels" $ | nindent 6 }} #TODO: check which labels to use where
+  template:
+    metadata:
+      labels:
+        {{- include "ldaf.selectorLabels" $ | nindent 8 }} #TODO: check which labels to use where
+    spec:
+      containers:
+        - name: {{ .name }}
+          image: {{ .image }}
+          ports:
+            - containerPort: {{ .targetPort }}
+              protocol: {{ .protocol }}
+          env:
+            - name: REDIS_HOST
+              value: "{{ $.Release.Name }}-redis-master"
+            - name: RABBITMQ_ADDRESS
+              value: "amqp://{{ $.Release.Name }}-rabbitmq"
+              {{- range .env }}
+            - name: {{ .name | quote }}
+              value: {{ .value | quote }}
+              {{- end}}
+{{- end }} 

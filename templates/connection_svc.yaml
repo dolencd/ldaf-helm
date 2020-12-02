@@ -1,0 +1,17 @@
+{{- range .Values.connections}}
+{{- $connection_svc_name  := printf "%s-ldafconn-svc-%s" $.Release.Name .name }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $connection_svc_name }}
+spec:
+  type: LoadBalancer
+  sessionAffinity: ClientIP
+  selector:
+    ldafv2-connection-name: {{ .name }}
+    # {{- include "ldaf.labels" $ | nindent 4 }}
+  ports:
+  - port: {{ .port }}
+    protocol: {{ .protocol }}
+
+{{- end }} 

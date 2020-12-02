@@ -1,0 +1,32 @@
+# Default values for ldaf.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+redis:
+  usePassword: false
+  cluster:
+    enabled: false
+
+rabbitmq:
+  auth:
+    username: guest
+    password: guest
+    erlangCookie: piskotek
+
+services:
+  - name: testservice
+    gitsrc: https://github.com/dolencd/ldafv2-testservice
+
+connections:
+  - name: udp
+    image: dolencd/ldafv2udp:latest
+    protocol: UDP
+    port: 41234
+    targetPort: 41234
+    env:
+      - name: UDP_FORWARDING_SERVICE
+        value: testservice
+      - name: UDP_PORT
+        value: 41234
+
+      
