@@ -15,6 +15,7 @@ rabbitmq:
 
 services:
   - name: testservice
+    replicaCount: 2
     gitsrc: https://github.com/dolencd/ldafv2-testservice
 
 connections:

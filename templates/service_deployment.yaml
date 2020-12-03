@@ -19,6 +19,8 @@ spec:
       containers:
         - name: {{ $service_name }}
           image: dolencd/ldafv2service:latest
+          resources:
+            {{- toYaml .resources | nindent 12 }}
           env:
             - name: REDIS_HOST
               value: "{{ $.Release.Name }}-redis-master"

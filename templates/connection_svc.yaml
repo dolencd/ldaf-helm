@@ -9,7 +9,7 @@ spec:
   sessionAffinity: ClientIP
   selector:
     ldafv2-connection-name: {{ .name }}
-    # {{- include "ldaf.labels" $ | nindent 4 }}
+    {{- include "ldaf.selectorLabels" $ | nindent 4 }}
   ports:
   - port: {{ .port }}
     protocol: {{ .protocol }}

@@ -15,6 +15,7 @@ spec:
   template:
     metadata:
       labels:
+        ldafv2-connection-name: {{ .name | quote }}
         {{- include "ldaf.selectorLabels" $ | nindent 8 }} #TODO: check which labels to use where
     spec:
       containers:
@@ -23,6 +24,8 @@ spec:
           ports:
             - containerPort: {{ .targetPort }}
               protocol: {{ .protocol }}
+          resources:
+            {{- toYaml .resources | nindent 12 }}
           env:
             - name: REDIS_HOST
               value: "{{ $.Release.Name }}-redis-master"
