@@ -35,4 +35,8 @@ spec:
               {{- else}}
               {{- fail "Either gitsrc or httpsrc is required for each service"}}
               {{- end}}
+              {{- range .env }}
+            - name: {{ .name | quote }}
+              value: {{ .value | quote }}
+              {{- end}}
 {{- end }} 
